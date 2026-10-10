@@ -56,6 +56,7 @@ Interpretation rules derived from this site:
 - `טרם הוזנו נתונים` means data not yet entered. Empty or missing homework is not proof that no work was assigned elsewhere.
 - Teachers sometimes enter classwork notes in the homework column or teach Hebrew in a slot labeled Art. Preserve that context without silently changing the recorded subject.
 - Preserve exact page ranges, questions, workbook names, notebook-versus-workbook directions, conditional completion instructions, and explicit deadlines. Flag incomplete entries rather than guessing; for example, `עמוד 148-` gives no ending page.
+- Completeness is more important than brevity: include the full content shown in each homework cell, not only its opening instruction. This includes embedded explanations, examples, bullet lists, copied board notes, and details that clarify what to practice or complete. Do not silently summarize or omit a long block as “details” or “see explanation”; structure it into readable sub-bullets while preserving all of its content. In WhatsApp output, keep the complete assignment even when it makes the message longer.
 - Mention attached files. Inspect an attachment with supported tools when the assignment depends on its contents; if it cannot be read, state that limitation.
 - Combine repeated assignments across consecutive lessons, retaining any distinct details.
 
