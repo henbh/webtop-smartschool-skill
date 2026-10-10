@@ -1,22 +1,23 @@
 ---
 name: webtop
 description: Read the Smartschool Webtop student portal through connected Chrome. Produce Hebrew homework, timetable, grades, attendance, lesson-event, and teacher-message reports for requested dates and track homework changes between checks.
+license: Apache-2.0
 ---
 
 # Webtop Smartschool student reports
 
 The product is Smartschool and the student portal is Webtop. For explicit invocation use `$webtop` in Codex or `/webtop` in Claude Code; natural-language requests mentioning either “Smartschool” or “Webtop” should also route here.
 
-## Personal defaults
+## Defaults for each family
 
 - Source: https://webtop.smartschool.co.il/Student_Card/11
 - Browser: the user's connected Chrome profile signed in to Smartschool.
 - Default one-off output: a Hebrew homework table returned in the chat. When the user asks for a weekly student report/full weekly report, include homework, weekly positive feedback and behavior notes, year-to-date attendance/event statistics, and the current timetable, plus other requested modules.
 - Optional output: Hebrew WhatsApp- or Telegram-ready text when requested; the daily update workflow uses this format by default.
 - History folder: `~/smartschool-homework`.
-- Recurring preference: daily at 17:00, timezone `Asia/Jerusalem`. This skill does not itself activate a schedule. Only report a schedule as active after verifying its creation with a supported scheduling tool or interface.
+- Optional schedule example: daily at 17:00, timezone `Asia/Jerusalem`. Use the family's requested time and children. This skill does not itself activate a schedule. Only report a schedule as active after verifying its creation with a supported scheduling tool or interface.
 
-Use an explicit requested date range for a one-off summary. For recurring checks, compare against saved observations, starting with lesson dates from 2026-09-01 through the current date. The user can change these defaults.
+Use an explicit requested date range for a one-off summary. For recurring checks, revisit the saved coverage range to detect late additions. With no history, use the family's requested range or the start of the selected school year through the current date; verify that year in Webtop rather than hardcoding a calendar year. The user can change these defaults.
 
 ## Request modes
 
@@ -25,6 +26,7 @@ Use an explicit requested date range for a one-off summary. For recurring checks
 - A daily homework update checks new or changed homework only.
 - A daily all-updates request checks homework, grades, attendance and lesson events, verifiable timetable changes, and teacher messages against their separate saved observations. Return only new or substantively changed records in a Hebrew WhatsApp-ready message unless another format is requested. Clearly list modules that could not be checked. A first check establishes baselines; it must not describe all existing records as newly added.
 - If multiple students are available, use the explicitly requested student or the student established in task history. If neither identifies one unambiguously, ask which student before extracting personal records.
+- For requests covering several children, verify each child's selected identity and produce separate reports and observations. Never reuse one child's baseline or records for another child.
 - If the connected Webtop tab is signed out, state that live access is unavailable and ask the user to sign in. You may answer from saved local history only when it covers the requested student, module, and dates; label it clearly as cached and include its last checked date. Do not present cached data as a live check. If history is insufficient, wait for sign-in rather than guessing.
 
 ## Homework table
@@ -45,7 +47,11 @@ Include the current regular timetable in a full weekly student report, using the
 
 ## Read the homework
 
-Use the available supported browser automation tool and its current documentation. Discover the connected Chrome tab by its URL; do not persist tab IDs or accessibility element indices. Reuse the signed-in Smartschool tab when available. If Chrome or login is unavailable, explain the access blocker and request the relevant connection or sign-in.
+For Ministry of Education SSO, use the signed-in Chrome workflow. The experimental MCP does not support SSO or reuse Chrome sessions; do not ask for Ministry credentials or retry them against its direct-login endpoint.
+
+If the optional local Webtop MCP server is configured and its tools are available, you may use `get_dashboard` and `get_homework` to retrieve records. Confirm the dashboard identifies the intended student; use only known class codes and class numbers, and query every applicable class. Verify the returned date coverage and preserve the full original homework text. The private API is unofficial and may be incomplete or out of date; if login fails, required class metadata is missing, or coverage is uncertain, continue with connected Chrome.
+
+Otherwise use the available supported browser automation tool and its current documentation. Discover the connected Chrome tab by its URL; do not persist tab IDs or accessibility element indices. Reuse the signed-in Smartschool tab when available. If Chrome or login is unavailable, explain the access blocker and request the relevant connection or sign-in.
 
 On `נושאי שיעור ושיעורי-בית`, verify the selected student and school year against the requested task or existing history. Read all weeks intersecting the requested range using `שבוע קודם`, `שבוע הבא`, or the visible calendar. Capture each day's homework column with its lesson date, subject, teacher, lesson number, text, and attachment names. Finish reading the displayed state after navigation before continuing.
 
@@ -62,7 +68,7 @@ Interpretation rules derived from this site:
 
 ## History and recurring checks
 
-Read `~/smartschool-homework/workflow.md` for the existing baseline and any previous reports or snapshots in the history folder. This is local task memory, not cross-session model memory.
+Read `workflow.md` and relevant previous reports or snapshots in the family's history folder if they exist. A new installation has no baseline: create the folder and establish observations after the first successful read. Keep separate child/school-year records, using subfolders or clearly identified files; preserve existing history and compare only matching identities, years, and modules. This is local task memory, not cross-session model memory.
 
 For recurring homework checks, revisit the saved date range to detect late additions to earlier lessons. Compare assignment content, not just the lesson date. Return only new or substantively changed assignments, clearly labeling changes. Do not infer completion from an assignment's age or disappearance.
 
